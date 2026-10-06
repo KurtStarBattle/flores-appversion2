@@ -18,22 +18,6 @@ namespace flores_appversion2.Controllers
 
         public ProductsController(ApplicationDbContext db) { _db = db; }
 
- 
-
-        // shows the list
-
-        public IActionResult Index()
-
-        {
-
-            var products = _db.Products.ToList();
-
-            return View(products);
-
-        }
-
- 
-
         // shows the empty add-form
 
         public IActionResult Create()
@@ -89,6 +73,19 @@ namespace flores_appversion2.Controllers
                 _db.SaveChanges();
             }
             return RedirectToAction("Index");
+        }
+
+        // SEARCH - gets the product for view
+        public IActionResult Index(string searchString)
+        {
+            var products = _db.Products.AsQueryable();
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                products = products.Where(p => p.Name.ToLower().Contains(searchString.ToLower()));
+            }
+
+            ViewData["searchString"] = searchString;
+            return View(products.ToList());
         }
 
     }
